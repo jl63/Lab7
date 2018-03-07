@@ -55,6 +55,10 @@ public class MorseDecoder {
         for (int binIndex = 0; binIndex < totalBinCount; binIndex++) {
             // Get the right number of samples from the inputFile
             // Sum all the samples together and store them in the returnBuffer
+            inputFile.readFrames(sampleBuffer, BIN_SIZE);
+            for (int sampleindex = 0; sampleindex < sampleBuffer.length; sampleindex++){
+                returnBuffer[binIndex] += sampleBuffer[sampleindex];
+            }
         }
         return returnBuffer;
     }
@@ -77,6 +81,24 @@ public class MorseDecoder {
      * @return the Morse code string of dots, dashes, and spaces
      */
     private static String powerToDotDash(final double[] powerMeasurements) {
+        String thecode;
+        int countbig = 0;
+        boolean washigh = true;
+        for (int i = 0; i < powerMeasurements.length; i++) {
+            if (powerMeasurements[i] >= POWER_THRESHOLD && washigh == true) {
+                countbig++;
+                washigh = true;
+                int indexofstring = 0;
+                if (powerMeasurements[i+1] < POWER_THRESHOLD){
+                    if (countbig >= DASH_BIN_COUNT){
+                        indexofstring++;
+                        thecode[indexofstring] = "-";
+
+                    }
+                }
+            }
+
+        }
         /*
          * There are four conditions to handle. Symbols should only be output when you see
          * transitions. You will also have to store how much power or silence you have seen.
